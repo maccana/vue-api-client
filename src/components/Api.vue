@@ -1,58 +1,36 @@
 // MyComponent.vue
 <template>
   <div>
-    <button @click="fetchData">Fetch Data</button>
-
-    <div v-if="apiStore.data">
-      {{ apiStore.data.title }}
+    <div v-if="apiStore.users">
+      <ul>
+        <li v-for="user in apiStore.users" :key="user.id">
+          {{ user.name }}
+        </li>
+      </ul>
     </div>
     <div v-else>
       Loading...
     </div>
+    <button @click="fetchUsers">Fetch Users</button>
   </div>
 </template>
 
 <script>
 import { ref } from 'vue';
-import { useApiStore } from '@/stores/ApiStore'; // Update the import
+import { useApiStore } from '@/stores/ApiStore';
 
 export default {
   setup() {
-    const apiStore = useApiStore(); // Update the store instance
+    const apiStore = useApiStore();
 
-    const fetchData = () => {
-      apiStore.fetchData();
+    const fetchUsers = () => {
+      apiStore.fetchUsers();
     };
 
     return {
       apiStore,
-      fetchData,
+      fetchUsers,
     };
   },
 };
 </script>
-
-<style scoped>
-h1 {
-  font-weight: 500;
-  font-size: 2.6rem;
-  position: relative;
-  top: -10px;
-}
-
-h3 {
-  font-size: 1.2rem;
-}
-
-.api h1,
-.api h3 {
-  text-align: center;
-}
-
-@media (min-width: 1024px) {
-  .api h1,
-  .api h3 {
-    text-align: left;
-  }
-}
-</style>
