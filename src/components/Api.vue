@@ -1,17 +1,36 @@
-<script setup lang="ts">
-    const apiFetch = async () => {
-    // call a service to fetch some data here
-    }
-
-    apiFetch()
-
-</script>
-
+// MyComponent.vue
 <template>
-  <div class="api">
-   
+  <div>
+    <button @click="fetchData">Fetch Data</button>
+
+    <div v-if="apiStore.data">
+      {{ apiStore.data.title }}
+    </div>
+    <div v-else>
+      Loading...
+    </div>
   </div>
 </template>
+
+<script>
+import { ref } from 'vue';
+import { useApiStore } from '@/stores/ApiStore'; // Update the import
+
+export default {
+  setup() {
+    const apiStore = useApiStore(); // Update the store instance
+
+    const fetchData = () => {
+      apiStore.fetchData();
+    };
+
+    return {
+      apiStore,
+      fetchData,
+    };
+  },
+};
+</script>
 
 <style scoped>
 h1 {
