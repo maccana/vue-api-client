@@ -18,12 +18,10 @@
     <button class="api-btn" v-show="apiStore.data" @click="filterClasses('PFU')">Filter PFU</button>
     <button class="api-btn" v-show="apiStore.data" @click="filterClasses('')">All</button>
     
-    <div>
-        <ul>
-            <li v-for="(c,i) in filteredData" :key="i">
-                {{ c.classType }}
-            </li>
-        </ul>
+    <div>        
+      <div class="list-item-card" v-for="(c,i) in filteredData" :key="i">
+        {{ c.classType }}
+      </div>
     </div>
 
   </div>
@@ -93,5 +91,14 @@ export default {
 <style scoped>
 .api-btn {
     margin-right:10px;
+}
+.list-item {
+  list-style: none;
+}
+.list-item-card {
+  margin: 20px;
+  border: 1px solid grey;
+  padding: 10px;
+  border-radius: 5px;
 }
 </style>
