@@ -56,4 +56,12 @@ export const useApiStore = defineStore('apiStore', {
             return filteredArray;
         },
     },
+    getters: {
+        pfus() {
+            return this.data.filter(cls => cls.classType === 'PFU')
+        },
+        classes() {
+            return this.data.filter(cls => cls.classType === 'Classes')
+        }
+    }
 });

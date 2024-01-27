@@ -13,7 +13,7 @@
       Loading...
     </div>
     <button class="api-btn" @click="fetchUsers">Fetch Users</button>
-    <button class="api-btn" @click="fetchData">Fetch Data</button>
+    <!-- <button class="api-btn" @click="fetchData">Fetch Data</button> -->
     <button class="api-btn" v-show="apiStore.data" @click="filterClasses('Classes')">Filter Classes</button>
     <button class="api-btn" v-show="apiStore.data" @click="filterClasses('PFU')">Filter PFU</button>
     <button class="api-btn" v-show="apiStore.data" @click="filterClasses('')">All</button>
@@ -35,13 +35,23 @@ import { useApiStore } from '@/stores/ApiStore';
 
 export default {
   setup() {
+    const apiStore = useApiStore();
 
     const filteredData = ref([]);
-    const apiStore = useApiStore();
 
     const filterClasses = async (classType) => {
       // Update the filteredData variable with the filtered result
-      filteredData.value = await apiStore.filterClasses(classType);
+      // filteredData.value = await apiStore.filterClasses(classType);
+
+      if(classType === 'PFU') {
+        filteredData.value = await apiStore.pfus
+      } 
+      else if(classType === 'Classes') {
+        filteredData.value = await apiStore.classes
+      }
+      else {
+        filteredData.value = await apiStore.data
+      }
     };
 
     const filterPFU = () => {
@@ -63,9 +73,8 @@ export default {
     // Fetch initial data on component mount
     onMounted(async () => {
       await apiStore.fetchData();
-      // await filterClasses(''); // Specify initial filter condition if needed
-         // Set filteredData after fetching the initial data
-         filteredData.value = apiStore.data;
+      // Set filteredData after fetching the initial data
+      filteredData.value = apiStore.data;
     });
 
     return {
