@@ -9,18 +9,23 @@
         </li>
       </ul>
     </div>
-    <div v-else>
+    <!-- <div v-else>
       Loading...
-    </div>
+    </div> -->
     <button class="api-btn" @click="fetchUsers">Fetch Users</button>
     <!-- <button class="api-btn" @click="fetchData">Fetch Data</button> -->
     <button class="api-btn" v-show="apiStore.data" @click="filterClasses('Classes')">Filter Classes</button>
     <button class="api-btn" v-show="apiStore.data" @click="filterClasses('PFU')">Filter PFU</button>
     <button class="api-btn" v-show="apiStore.data" @click="filterClasses('')">All</button>
     
-    <div>        
+    <div> 
+      <div style="margin: 20px 0px 20px; background: 50bf31;color: #fff">
+        Login Timestamp: {{ loginTimestamp }}       
+      </div>
+      <p>{{ classTypeLabel }} ({{ filteredData.length }}) </p>
+      <div v-if="dataLoading">Loading classes...</div>
       <div class="list-item-card" v-for="(c,i) in filteredData" :key="i">
-        {{ c.classType }}
+        {{ c }}
       </div>
     </div>
 
@@ -34,20 +39,25 @@ import { useApiStore } from '@/stores/ApiStore';
 export default {
   setup() {
     const apiStore = useApiStore();
-
     const filteredData = ref([]);
+    const dataLoading = ref(true);
+    const loginTimestamp = ref();
+    const classTypeLabel = ref('All Classes')
 
     const filterClasses = async (classType) => {
       // Update the filteredData variable with the filtered result
       // filteredData.value = await apiStore.filterClasses(classType);
 
       if(classType === 'PFU') {
+        classTypeLabel.value = 'Individual Follow-Ups'
         filteredData.value = await apiStore.pfus
       } 
       else if(classType === 'Classes') {
+        classTypeLabel.value = 'Private and Group Classes'
         filteredData.value = await apiStore.classes
       }
       else {
+        classTypeLabel.value = 'All Classes'
         filteredData.value = await apiStore.data
       }
     };
@@ -57,7 +67,12 @@ export default {
     };
 
     const fetchData = () => {
-      apiStore.fetchData();
+      setTimeout(() => {
+        dataLoading.value = true
+        apiStore.fetchData();
+        loginTimestamp.value = moment().format('MM/DD/YYYY HH:mm:ss');
+      },2000)
+
     };
 
     const fetchUsers = () => {
@@ -70,12 +85,20 @@ export default {
 
     // Fetch initial data on component mount
     onMounted(async () => {
-      await apiStore.fetchData();
+      setInterval(() => {
+        apiStore.fetchData()
+        console.log('update...')
+      }, 10000)
+
+      // await apiStore.fetchData();
       // Set filteredData after fetching the initial data
       filteredData.value = apiStore.data;
+      dataLoading.value = false
+      loginTimestamp.value = moment().format('MM/DD/YYYY HH:mm:ss');
     });
 
     return {
+      loginTimestamp,
       apiStore,
       fetchData,
       fetchUsers,
@@ -83,6 +106,8 @@ export default {
       filterClasses,
       filteredData,
       filterPFU,
+      classTypeLabel,
+      dataLoading
     };
   },
 };
