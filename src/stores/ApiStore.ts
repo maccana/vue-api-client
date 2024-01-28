@@ -6,6 +6,7 @@ export const useApiStore = defineStore('apiStore', {
         users: null,
         data: [],
     }),
+
     actions: {
         async fetchData() {
             try {
@@ -16,7 +17,7 @@ export const useApiStore = defineStore('apiStore', {
                     }
                 })
                 const data = await response.json();
-                console.log('data: ', data)
+                console.log('data returned in apiStore: ', data)
                 this.data = data;
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -56,6 +57,7 @@ export const useApiStore = defineStore('apiStore', {
             return filteredArray;
         },
     },
+
     getters: {
         pfus() {
             return this.data.filter(cls => cls.classType === 'PFU')

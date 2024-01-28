@@ -26,6 +26,8 @@
       <div v-if="dataLoading">Loading classes...</div>
       <div class="list-item-card" v-for="(c,i) in filteredData" :key="i">
         {{ c }}
+        <a v-if="c.meetingURL" :href="c.meetingURL" target="_blank">Visit Example.com</a>
+        <p v-else>No meeting link</p>
       </div>
     </div>
 
@@ -33,7 +35,7 @@
 </template>
 
 <script lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, reactive, watch, onMounted } from 'vue';
 import { useApiStore } from '@/stores/ApiStore';
 
 export default {
@@ -41,7 +43,7 @@ export default {
     const apiStore = useApiStore();
     const filteredData = ref([]);
     const dataLoading = ref(true);
-    const loginTimestamp = ref();
+    const loginTimestamp = ref('');
     const classTypeLabel = ref('All Classes')
 
     const filterClasses = async (classType) => {
@@ -66,13 +68,16 @@ export default {
         apiStore.filterPFU();
     };
 
-    const fetchData = () => {
-      setTimeout(() => {
-        dataLoading.value = true
-        apiStore.fetchData();
-        loginTimestamp.value = moment().format('MM/DD/YYYY HH:mm:ss');
-      },2000)
-
+    const fetchData = async () => {
+      try {
+        dataLoading.value = true;
+        await apiStore.fetchData();
+        // loginTimestamp.value = moment().format('MM/DD/YYYY HH:mm:ss');
+        // console.log('loginTimestamp updated:', loginTimestamp.value);
+      } catch (error) {
+        // Handle error
+        console.error('Error in fetchData:', error);
+      }
     };
 
     const fetchUsers = () => {
@@ -85,16 +90,28 @@ export default {
 
     // Fetch initial data on component mount
     onMounted(async () => {
-      setInterval(() => {
-        apiStore.fetchData()
-        console.log('update...')
-      }, 10000)
+     
 
-      // await apiStore.fetchData();
+      await apiStore.fetchData();
       // Set filteredData after fetching the initial data
       filteredData.value = apiStore.data;
       dataLoading.value = false
       loginTimestamp.value = moment().format('MM/DD/YYYY HH:mm:ss');
+
+      setInterval(() => {
+        apiStore.fetchData()
+        console.log('update...')
+        loginTimestamp.value = moment().format('MM/DD/YYYY HH:mm:ss');
+      }, 900000)
+
+
+    });
+    
+    // Watch for changes in loginTimestamp
+    // Check if needed..
+    watch(loginTimestamp, (newValue) => {
+      console.log('loginTimestamp updated:', newValue);
+      // loginTimestamp.value = newValue
     });
 
     return {
