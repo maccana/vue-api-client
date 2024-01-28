@@ -16,7 +16,7 @@
     <!-- <button class="api-btn" @click="fetchData">Fetch Data</button> -->
     <button class="api-btn" v-show="apiStore.data" @click="filterClasses('Classes')">Filter Classes</button>
     <button class="api-btn" v-show="apiStore.data" @click="filterClasses('PFU')">Filter PFU</button>
-    <button class="api-btn" v-show="apiStore.data" @click="filterClasses('')">All</button>
+    <button class="api-btn" v-show="apiStore.data" @click="filterClasses('')">All Classes</button>
     
     <div> 
       <div style="margin: 20px 0px 20px; background: 50bf31;color: #fff">
@@ -26,7 +26,7 @@
       <div v-if="dataLoading">Loading classes...</div>
       <div class="list-item-card" v-for="(c,i) in filteredData" :key="i">
         {{ c }}
-        <a v-if="c.meetingURL" :href="c.meetingURL" target="_blank">Visit Example.com</a>
+        <a v-if="c.meetingURL" :href="c.meetingURL" target="_blank">Go to meeting</a>
         <p v-else>No meeting link</p>
       </div>
     </div>
@@ -37,10 +37,14 @@
 <script lang="ts">
 import { ref, reactive, watch, onMounted } from 'vue';
 import { useApiStore } from '@/stores/ApiStore';
+import { useGlobalStore } from '@/stores/GlobalStore';
+
 
 export default {
   setup() {
     const apiStore = useApiStore();
+    const globalStore = useGlobalStore();
+
     const filteredData = ref([]);
     const dataLoading = ref(true);
     const loginTimestamp = ref('');
@@ -90,29 +94,32 @@ export default {
 
     // Fetch initial data on component mount
     onMounted(async () => {
-     
-
+      await globalStore.setLoginTimestamp()
+      loginTimestamp.value = await globalStore.loginTimestamp
+      
+      console.log('timey ', loginTimestamp.value)
       await apiStore.fetchData();
       // Set filteredData after fetching the initial data
       filteredData.value = apiStore.data;
       dataLoading.value = false
-      loginTimestamp.value = moment().format('MM/DD/YYYY HH:mm:ss');
 
-      setInterval(() => {
+      setInterval(async () => {
         apiStore.fetchData()
         console.log('update...')
-        loginTimestamp.value = moment().format('MM/DD/YYYY HH:mm:ss');
-      }, 900000)
+        // loginTimestamp.value = moment().format('MM/DD/YYYY HH:mm:ss');
+        await globalStore.setLoginTimestamp()
+        loginTimestamp.value = await globalStore.loginTimestamp
+      }, 30000)
 
 
     });
     
     // Watch for changes in loginTimestamp
     // Check if needed..
-    watch(loginTimestamp, (newValue) => {
-      console.log('loginTimestamp updated:', newValue);
-      // loginTimestamp.value = newValue
-    });
+    // watch(loginTimestamp, (newValue) => {
+    //   console.log('loginTimestamp updated:', newValue);
+    //   // loginTimestamp.value = newValue
+    // });
 
     return {
       loginTimestamp,
@@ -138,7 +145,7 @@ export default {
   list-style: none;
 }
 .list-item-card {
-  margin: 20px;
+  margin: 20px 0px;
   border: 1px solid grey;
   padding: 10px;
   border-radius: 5px;
