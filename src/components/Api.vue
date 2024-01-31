@@ -17,6 +17,7 @@
     <button class="api-btn" v-show="apiStore.data" @click="filterClasses('Classes')">Filter Classes</button>
     <button class="api-btn" v-show="apiStore.data" @click="filterClasses('PFU')">Filter PFU</button>
     <button class="api-btn" v-show="apiStore.data" @click="filterClasses('')">All Classes</button>
+    <button class="api-btn" v-show="apiStore.data" @click="filterClasses('Edit')">Editable</button>
     
     <div> 
       <div style="margin: 20px 0px 20px; background: 50bf31;color: #fff">
@@ -25,12 +26,11 @@
       <p>{{ classTypeLabel }} ({{ filteredData.length }}) </p>
       <div v-if="dataLoading">Loading classes...</div>
       <div class="list-item-card" v-for="(c,i) in filteredData" :key="i">
-        {{ c }}
+        {{ c.canEdit }}
         <a v-if="c.meetingURL" :href="c.meetingURL" target="_blank">Go to meeting</a>
         <p v-else>No meeting link</p>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -42,6 +42,7 @@ import { useGlobalStore } from '@/stores/GlobalStore';
 
 export default {
   setup() {
+    const referenceDateTime = '11/27/2023 18:07:45';
     const apiStore = useApiStore();
     const globalStore = useGlobalStore();
 
@@ -49,6 +50,15 @@ export default {
     const dataLoading = ref(true);
     const loginTimestamp = ref('');
     const classTypeLabel = ref('All Classes')
+    const editableClasses = ref([ {
+      'classId': 'CLS03084083',
+      'teacherId': 2,
+      },
+      {
+      'classId': 'CLS02372',
+      'teacherId': 2,
+      }
+    ])
 
     const filterClasses = async (classType) => {
       // Update the filteredData variable with the filtered result
@@ -61,6 +71,12 @@ export default {
       else if(classType === 'Classes') {
         classTypeLabel.value = 'Private and Group Classes'
         filteredData.value = await apiStore.classes
+      }
+      else if(classType === 'Edit') {
+        classTypeLabel.value = 'Submitted'
+        const editList = await apiStore.editList
+        console.log('Yep ', editList)
+        filteredData.value = editList
       }
       else {
         classTypeLabel.value = 'All Classes'
@@ -131,7 +147,9 @@ export default {
       filteredData,
       filterPFU,
       classTypeLabel,
-      dataLoading
+      dataLoading,
+      editableClasses,
+      // referenceDateTime,
     };
   },
 };
