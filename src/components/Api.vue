@@ -124,8 +124,8 @@ export default {
         console.log('update...')
         // loginTimestamp.value = moment().format('MM/DD/YYYY HH:mm:ss');
         await globalStore.setLoginTimestamp()
-        loginTimestamp.value = await globalStore.loginTimestamp
-      }, 30000)
+        loginTimestamp.value = await globalStore.lastFmDataTimestamp
+      }, 10000)
 
 
     });
