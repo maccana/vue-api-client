@@ -26,7 +26,7 @@
       <p>{{ classTypeLabel }} ({{ filteredData.length }}) </p>
       <div v-if="dataLoading">Loading classes...</div>
       <div class="list-item-card" v-for="(c,i) in filteredData" :key="i">
-        {{ c.canEdit }}
+        {{ c }}
         <a v-if="c.meetingURL" :href="c.meetingURL" target="_blank">Go to meeting</a>
         <p v-else>No meeting link</p>
       </div>
@@ -111,7 +111,7 @@ export default {
     // Fetch initial data on component mount
     onMounted(async () => {
       await globalStore.setLoginTimestamp()
-      loginTimestamp.value = await globalStore.loginTimestamp
+      loginTimestamp.value = await globalStore.lastFmDataTimestamp
       
       console.log('timey ', loginTimestamp.value)
       await apiStore.fetchData();

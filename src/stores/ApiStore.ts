@@ -19,6 +19,8 @@ export const useApiStore = defineStore('apiStore', {
                 })
                 const data = await response.json();
                 data[0]['canEdit'] = true
+                data[3]['canEdit'] = true
+
                 console.log('data returned in apiStore: ', data[0])
                 this.data = data;
             } catch (error) {
