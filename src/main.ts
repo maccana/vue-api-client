@@ -7,12 +7,11 @@ import { createI18n } from 'vue-i18n'
 import App from './App.vue'
 import router from './router'
 
-
-
+// Configure i18n
 const i18n = createI18n({
     locale: 'fr', // set locale
     fallbackLocale: 'en', // set fallback locale
-    allowComposition: true, // you need to specify that!
+    allowComposition: true, // you need to specify this!
     messages: {
         en: {
             hello: 'Hello bilingual world!'
