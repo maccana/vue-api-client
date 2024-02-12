@@ -10,7 +10,7 @@ import router from './router'
 
 
 const i18n = createI18n({
-    locale: 'en', // set locale
+    locale: 'fr', // set locale
     fallbackLocale: 'en', // set fallback locale
     allowComposition: true, // you need to specify that!
     messages: {
